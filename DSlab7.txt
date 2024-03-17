@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct Student {
+char USN[15];
+char Name[50];
+char Programme[20];
+int Sem;
+long long int PhNo;
+struct Student *next;
+};
+struct Student* createStudent();
+void frontInsert(struct Student** head, struct Student* newStudent);
+void displayList(struct Student* head);
+int countNodes(struct Student* head);
+void endInsert(struct Student** head, struct Student* newStudent);
+void frontDelete(struct Student** head);
+void endDelete(struct Student** head);
+int main() {
+struct Student* head = NULL;
+int choice;
+do {
+printf("\nSingly Linked List Menu\n");
+printf("a. Create a SLL of N Students Data by using front insertion\n");
+printf("b. Display the status of SLL and count the number of nodes in it\n");
+printf("c. Perform Insertion at End / Deletion at End of SLL\n");
+printf("d. Perform Insertion at Front / Deletion at Front of SLL (Demonstration of stack)\n");
+printf("e. Exit\n");
+printf("Enter your choice: ");
+scanf(" %c", &choice);
+switch (choice) {
+case 'a': {
+int n;
+printf("Enter the number of students: ");
+scanf("%d", &n);
+for (int i = 0; i < n; ++i) {
+struct Student* newStudent = createStudent();
+frontInsert(&head, newStudent);
+}
+break;
+}
+case 'b':
+displayList(head);
+printf("Number of nodes in the list: %d\n", countNodes(head));
+break;
+case 'c': {
+struct Student* newStudent = createStudent();
+endInsert(&head, newStudent);
+break;
+}
+case 'd':
+frontDelete(&head);
+break;
+case 'e':
+printf("Exiting the program. Goodbye!\n");
+break;
+default:
+printf("Invalid choice! Please enter a valid option.\n");
+}
+} while (choice != 'e');
+return 0;
+}
+struct Student* createStudent() {
+struct Student* newStudent = (struct Student*)malloc(sizeof(struct Student));
+printf("Enter USN: ");
+scanf("%s", newStudent->USN);
+printf("Enter Name: ");
+scanf(" %[^\n]", newStudent->Name);
+printf("Enter Programme: ");
+scanf(" %[^\n]", newStudent->Programme);
+printf("Enter Semester: ");
+scanf("%d", &newStudent->Sem);
+printf("Enter Phone Number: ");
+scanf("%lld", &newStudent->PhNo);
+newStudent->next = NULL;
+return newStudent;
+}
+void frontInsert(struct Student** head, struct Student* newStudent) {
+newStudent->next = *head;
+*head = newStudent;
+printf("Student data inserted at the front.\n");
+}
+void displayList(struct Student* head) {
+printf("Singly Linked List:\n");
+while (head != NULL) {
+printf("USN: %s, Name: %s, Programme: %s, Semester: %d, Phone: %lld\n",
+head->USN, head->Name, head->Programme, head->Sem, head->PhNo);
+head = head->next;
+}
+}
+int countNodes(struct Student* head) {
+int count = 0;
+while (head != NULL) {
+count++;
+head = head->next;
+}
+return count;
+}
+void endInsert(struct Student** head, struct Student* newStudent) {
+if (*head == NULL) {
+*head = newStudent;
+} else {
+struct Student* temp = *head;
+while (temp->next != NULL) {
+temp = temp->next;
+}
+temp->next = newStudent;
+}
+printf("Student data inserted at the end.\n");
+}
+void frontDelete(struct Student** head) {
+if (*head == NULL) {
+printf("List is empty! Cannot delete.\n");
+} else {
+struct Student* temp = *head;
+*head = (*head)->next;
+free(temp);
+printf("Student data deleted from the front.\n");
+}
+}
+void endDelete(struct Student** head) {
+if (*head == NULL) {
+printf("List is empty! Cannot delete.\n");
+} else if ((*head)->next == NULL) {
+free(*head);
+*head = NULL;
+printf("Student data deleted from the end.\n");
+} else {
+struct Student* temp = *head;
+while (temp->next->next != NULL) {
+temp = temp->next;
+}
+free(temp->next);
+temp->next = NULL;
+printf("Student data deleted from the end.\n");
+}
+}

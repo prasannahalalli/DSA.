@@ -1,0 +1,171 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Employee {
+    char SSN[15];
+    char Name[50];
+    char Dept[20];
+    char Designation[30];
+    float Sal;
+    long long int PhNo;
+    struct Employee *prev, *next;
+};
+
+struct Employee* createEmployee();
+void endInsert(struct Employee** head, struct Employee** tail, struct Employee* newEmployee);
+void displayList(struct Employee* head);
+int countNodes(struct Employee* head);
+void endDelete(struct Employee** head, struct Employee** tail);
+void frontInsert(struct Employee** head, struct Employee** tail, struct Employee* newEmployee);
+void frontDelete(struct Employee** head, struct Employee** tail);
+
+int main() {
+    struct Employee *head = NULL, *tail = NULL;
+    int choice;
+    
+    do {
+        printf("\nDoubly Linked List Menu\n");
+        printf("a. Create a DLL of N Employees Data by using end insertion\n");
+        printf("b. Display the status of DLL and count the number of nodes in it\n");
+        printf("c. Perform Insertion and Deletion at End of DLL\n");
+        printf("d. Perform Insertion and Deletion at Front of DLL\n");
+        printf("e. Demonstrate how this DLL can be used as Double Ended Queue\n");
+        printf("f. Exit\n");
+        printf("Enter your choice: ");
+        scanf(" %c", &choice);
+        
+        switch (choice) {
+            case 'a': {
+                int n;
+                printf("Enter the number of employees: ");
+                scanf("%d", &n);
+                for (int i = 0; i < n; ++i) {
+                    struct Employee* newEmployee = createEmployee();
+                    endInsert(&head, &tail, newEmployee);
+                }
+                break;
+            }
+            case 'b':
+                displayList(head);
+                printf("Number of nodes in the list: %d\n", countNodes(head));
+                break;
+            case 'c':
+                endInsert(&head, &tail, createEmployee());
+                endDelete(&head, &tail);
+                break;
+            case 'd':
+                frontInsert(&head, &tail, createEmployee());
+                frontDelete(&head, &tail);
+                break;
+            case 'e':
+                endInsert(&head, &tail, createEmployee());
+                frontInsert(&head, &tail, createEmployee());
+                endDelete(&head, &tail);
+                frontDelete(&head, &tail);
+                break;
+            case 'f':
+                printf("Exiting the program. Goodbye!\n");
+                break;
+            default:
+                printf("Invalid choice! Please enter a valid option.\n");
+                break; // Added break statement to exit the switch statement
+        }
+    } while (choice != 'f'); // Placed the do-while loop's closing brace here
+    
+    return 0;
+}
+
+struct Employee* createEmployee() {
+    struct Employee* newEmployee = (struct Employee*)malloc(sizeof(struct Employee));
+    if (newEmployee == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Enter SSN: ");
+    scanf("%s", newEmployee->SSN);
+    printf("Enter Name: ");
+    scanf(" %[^\n]", newEmployee->Name);
+    printf("Enter Department: ");
+    scanf(" %[^\n]", newEmployee->Dept);
+    printf("Enter Designation: ");
+    scanf(" %[^\n]", newEmployee->Designation);
+    printf("Enter Salary: ");
+    scanf("%f", &newEmployee->Sal);
+    printf("Enter Phone Number: ");
+    scanf("%lld", &newEmployee->PhNo);
+    newEmployee->prev = newEmployee->next = NULL;
+    return newEmployee;
+}
+
+void endInsert(struct Employee** head, struct Employee** tail, struct Employee* newEmployee) {
+    if (*head == NULL) {
+        *head = *tail = newEmployee;
+    } else {
+        newEmployee->prev = *tail;
+        (*tail)->next = newEmployee;
+        *tail = newEmployee;
+    }
+    printf("Employee data inserted at the end.\n");
+}
+
+void displayList(struct Employee* head) {
+    printf("Doubly Linked List:\n");
+    while (head != NULL) {
+        printf("SSN: %s, Name: %s, Dept: %s, Designation: %s, Salary: %.2f, Phone: %lld\n",
+               head->SSN, head->Name, head->Dept, head->Designation, head->Sal, head->PhNo);
+        head = head->next;
+    }
+}
+
+int countNodes(struct Employee* head) {
+    int count = 0;
+    while (head != NULL) {
+        count++;
+        head = head->next;
+    }
+    return count;
+}
+
+void endDelete(struct Employee** head, struct Employee** tail) {
+    if (*tail == NULL) {
+        printf("List is empty! Cannot delete.\n");
+    } else if ((*head)->next == NULL) {
+        free(*head);
+        *head = *tail = NULL;
+        printf("Employee data deleted from the end.\n");
+    } else {
+        struct Employee* temp = *tail;
+        *tail = (*tail)->prev;
+        (*tail)->next = NULL;
+        free(temp);
+        printf("Employee data deleted from the end.\n");
+    }
+}
+
+void frontInsert(struct Employee** head, struct Employee** tail, struct Employee* newEmployee) {
+    if (*head == NULL) {
+        *head = *tail = newEmployee;
+    } else {
+        newEmployee->next = *head;
+        (*head)->prev = newEmployee;
+        *head = newEmployee;
+    }
+    printf("Employee data inserted at the front.\n");
+}
+
+void frontDelete(struct Employee** head, struct Employee** tail) {
+    if (*head == NULL) {
+        printf("List is empty! Cannot delete.\n");
+    } else if ((*head)->next == NULL) {
+        free(*head);
+        *head = *tail = NULL;
+        printf("Employee data deleted from the front.\n");
+    } else {
+        struct Employee* temp = *head;
+        *head = (*head)->next;
+        (*head)->prev = NULL;
+        free(temp);
+        printf("Employee data deleted from the front.\n");
+    }
+}
